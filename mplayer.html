@@ -1,0 +1,199 @@
+<!DOCTYPE html> 
+<html>
+<head>
+  <style>
+  body{
+  margin: 0px;
+  padding: 0px;
+  background-color: #101010;
+  color: #808080;
+  font-family: Arial, Helvetica, sans-serif;
+  }
+  input{
+  border: 1px solid grey;
+  padding: 0px;
+  margin: 0px;
+  }
+  div{
+  box-sizing: border-box;
+  padding: 0px;
+  margin: 0px;
+  }
+
+  
+
+  .container{
+  width: 100%;
+  display: flex;
+  min-height: 80vh;
+  }
+  .container > div {
+  border-spacing: 0px;
+  }
+  .container > .playDiv{
+  padding: 12px 8px 12px 8px;
+  width: auto;
+  max-width: calc(100% - 350px);
+  flex-grow: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  }
+  
+  .container > .playDiv > video{
+  max-width: calc( 100vw - 366px);
+  }
+
+   .container > .playDiv > #info{
+  align-self: center;
+  margin: 8px 5px 5px 5px;
+  }
+
+
+
+  .container > .playListDiv{
+  min-width: 350px;
+  max-width: 45%;
+  display: flex;
+  flex-direction: column;
+  padding-right: 10px;
+  border-left: 1px solid #808080;
+  padding-left: 10px;
+  }
+
+  .container > .playListDiv > div{
+  padding: 8px;
+  } 
+ 
+  .container > .playListDiv > .playListList{
+  align-self: stretch;
+  flex-grow: 1;
+  padding: 8px;
+  overflow-y: auto;
+  max-height: 80vh;
+  word-wrap: break-word;
+  }
+ 
+  .container > .playListDiv > .playListAdd{
+  display: flex;
+  justify-content: space-around;
+  }
+
+
+  .container > .playListDiv > .playListAdd > *{
+  align-self: stretch;
+  background-color: #101010;
+  border: 1px solid #808080;
+  color: #808080;
+  border-radius: 3px;
+  }
+
+  .container > .playListDiv > .playListAdd > textarea{
+  padding: 3px 3px 3px 8px;
+  resize: both;
+  flex-grow: 1;
+  }
+  
+  </style>
+</head> 
+<body> 
+
+  <div class="container">
+    <div class="playDiv">
+
+
+    <video id="mPlayer" controls>
+      Your browser does not support the audio element.
+    </video>
+    <div id="info"></div>
+
+    </div>
+    <div class="playListDiv">
+      <div id="list" class="playListList">
+      &nbsp;
+      </div>
+      <div class="playListAdd">
+      <textarea id="addUrl" placeholder="url"></textarea>
+      <div style="border: none;">&nbsp;</div>
+      <input id="addBtn" type="submit" value="add" />
+      </div>
+    </div>
+  </div>
+
+<script>
+var playlist = [];
+var ply = document.getElementById("mPlayer");
+
+ply.onended = function() {
+playlist.shift();
+displayList(playlist);
+ply.src=playlist[0];
+};
+
+ply.onplay=function() {
+  ply.autoplay=true;
+  document.getElementById("info").innerHTML=ply.src;
+  console.log(ply.textTracks);
+}
+
+/*
+ply.oncanplay = function () {
+console.log(ply.currentSrc);
+}
+*/
+
+function displayList(pl){
+var max=pl.length;
+var html="";
+var el = document.getElementById("list");
+  if(max>0){
+  el.innerHTML="";
+    for(var i=0; i<max; i++){
+      el.innerHTML=el.innerHTML + "<div><a onclick=\"delFromList(playlist, "+ i +")\">[-] </a>" + pl[i] + "</div>";
+    }
+  }
+  else{
+  el.innerHTML="";
+  }
+}
+
+
+function addToList(pl){
+var url = document.getElementById("addUrl");
+  
+  if(url.value != "" && url.value != null){
+    if(url.value.includes('\n')){
+    var arr=url.value.split('\n');
+    var max = arr.length;
+      for(var i=0;i<max; i++){
+      pl.push(arr[i]);
+      } 
+    url.value="";
+    displayList(pl);
+    }
+    else{
+    pl.push(url.value);
+    url.value="";
+    displayList(pl);
+      if(pl[0]!=document.getElementById("mPlayer").src){
+      document.getElementById("mPlayer").src=pl[0];
+      }
+    }
+  }
+}
+
+function delFromList(pl, id){
+pl.splice(id, 1);
+document.getElementById("mPlayer").src=pl[0];
+displayList(pl);
+}
+
+document.getElementById("addBtn").onclick=function(){addToList(playlist)};
+
+</script>
+
+</body> 
+</html>
+
