@@ -11,8 +11,16 @@
   }
   input{
   border: 1px solid grey;
-  padding: 0px;
+  background-color: transparent;
+  color: #808080;
   margin: 0px;
+  border-radius: 3px;
+  padding: 2px;
+  }
+  input[type=submit]{
+  vertical-align: middle;
+  justify-content: center;
+  text-align: center;
   }
   div{
   box-sizing: border-box;
@@ -30,6 +38,7 @@
   .container > div {
   border-spacing: 0px;
   }
+
   .container > .playDiv{
   padding: 12px 8px 12px 8px;
   width: auto;
@@ -38,13 +47,57 @@
   align-self: stretch;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-direction: column;
   }
+
+
+  .container > .playDiv > div {
+  border: 1px solid red;
+  }
+
+  .container > .playDiv > .playBrowse{
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
   
+  flex-grow: 0;
+  transition: all 1s;
+  padding: 8px;
+  }
+
+  .container > .playDiv > .playBrowse:hover{
+  flex-grow: 1;
+  }
+
+
+  .container > .playDiv > .playBrowse > *{
+  
+  }
+
+
+  .container > .playDiv > .playBrowse > .playBrowseCtrl{
+  display: flex;
+  flex-direction: ;
+  justify-content: flex-end;
+  align-items: center;
+  }
+
+
   .container > .playDiv > video{
   max-width: calc( 100vw - 366px);
+  transition: all 1s;
+  min-height: 30px;
+  max-height: 1000px;
   }
+
+
+  .container > .playDiv > .playBrowse:hover + video{
+  max-height: 0px;
+  flex-grow: 0;
+  }
+
 
    .container > .playDiv > #info{
   align-self: center;
@@ -66,6 +119,27 @@
   .container > .playListDiv > div{
   padding: 8px;
   } 
+
+  .container > .playListDiv > .url{
+  display: flex;
+  align-items: stretch;
+  }
+
+  .container > .playListDiv > .url > *{
+  background-color: #101010;
+  border: 1px solid #808080;
+  color: #808080;
+  border-radius: 3px;
+  padding: 2px;
+  justify-content: center;
+  vertical-align: middle;
+  }
+
+
+  .container > .playListDiv > .url > #browse {
+  flex-grow: 1;
+  padding: 3px 3px 3px 8px;
+  }
  
   .container > .playListDiv > .playListList{
   align-self: stretch;
@@ -88,6 +162,7 @@
   border: 1px solid #808080;
   color: #808080;
   border-radius: 3px;
+  padding: 2px;
   }
 
   .container > .playListDiv > .playListAdd > textarea{
@@ -97,20 +172,41 @@
   }
   
   </style>
+  <script>
+  function closeFileBrowse (){
+  alert("test");
+  }
+  </script>
 </head> 
 <body> 
 
   <div class="container">
     <div class="playDiv">
+      <div class="playBrowse">
+        <div id="browseWin" class="playBrowseWin">
+        &nbsp;
+        </div>
+        <div class="playBrowseCtrl">
+        <input id="playBrowseBtn" type="submit" value="add"/>
+        <div>&nbsp;</div>
+        <input id="playBrowseBtnCls" type="submit" value="close" onclick="closeFileBrowse()" />
+        </div>
+      </div>
+   
+      <video id="mPlayer" controls>
+        Your browser does not support the audio element.
+      </video>
 
-
-    <video id="mPlayer" controls>
-      Your browser does not support the audio element.
-    </video>
-    <div id="info"></div>
-
+      <div id="info"></div>
     </div>
+
+
     <div class="playListDiv">
+      <div class="url">
+      <input id="browse" type="input" placeholder="url to browser"/>
+      <div style="border: none;">&nbsp;</div>
+      <input id="browseBtn" type="submit" value="go" />
+      </div>
       <div id="list" class="playListList">
       &nbsp;
       </div>
@@ -187,6 +283,10 @@ function delFromList(pl, id){
 pl.splice(id, 1);
 document.getElementById("mPlayer").src=pl[0];
 displayList(pl);
+}
+
+function closeFileBrowse(){
+document.getElementsById("browseWin").style.max-height="0px";
 }
 
 document.getElementById("addBtn").onclick=function(){addToList(playlist)};
