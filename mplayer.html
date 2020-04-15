@@ -170,16 +170,15 @@ var url = document.getElementById("addUrl");
       for(var i=0;i<max; i++){
       pl.push(arr[i]);
       } 
-    url.value="";
-    displayList(pl);
     }
     else{
     pl.push(url.value);
+    }
+
     url.value="";
     displayList(pl);
-      if(pl[0]!=document.getElementById("mPlayer").src){
-      document.getElementById("mPlayer").src=pl[0];
-      }
+    if(pl[0]!=document.getElementById("mPlayer").src){
+    document.getElementById("mPlayer").src=pl[0];
     }
   }
 }
