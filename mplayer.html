@@ -276,13 +276,13 @@
       url = url + nl + obj[i].value;
       nl = '\n';
       }
-    console.log(url);
     addToList(pl, url); 
     }
 
     function delFromList(pl, id){
     pl.splice(id, 1);
-    document.getElementById("mPlayer").src=pl[0];
+      document.getElementById("mPlayer").src=pl[0];
+    
     displayList(pl);
     }
 
@@ -357,12 +357,13 @@
       playlist.shift();
       displayList(playlist);
       ply.src=playlist[0];
+      document.getElementById("info").innerHTML=ply.src;
       };
 
       ply.onplay=function() {
         ply.autoplay=true;
         document.getElementById("info").innerHTML=ply.src;
-        console.log(ply.textTracks);
+        //console.log(ply.textTracks);
       }
 
       document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
