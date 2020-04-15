@@ -208,6 +208,24 @@
     }
     */
 
+    function splitUrl( str ){
+      if( str == '' || !str){
+      return null;
+      }
+    var patt = /[a-zA-Z]{4,6}:\/{2}[a-zA-Z0-9-_.]+/; //hostname pattern
+    var host = str.match(patt)[0];
+    var len = host.length;
+    return {host: host, path:str.substr(len, str.length-len)};
+    }
+
+    function setUrl(host, url, path){
+      if(path.slice(0,1) == '/'){
+      return host + path;
+      }
+      
+      return url + path;
+    }
+
     function displayList(pl){
     var max=pl.length;
     var html="";
@@ -299,6 +317,9 @@
           return response.text();
         })
         .then((html) => {
+          var hostp = document.getElementById("browse").value;
+          var obj = splitUrl(hostp);
+          var host = obj.host;
           var parser = new DOMParser();
 
           var doc = parser.parseFromString(html, "text/html");
@@ -313,10 +334,10 @@
           var fhtml = '<select id="fileSel" multiple>';
             for(var i=0; i < max; i++){
               if(arr[i].href.slice(-1) == '/'){
-              fhtml = fhtml + '<option value="' + arr[i].href + '" onclick="browseToUrl(\'' + arr[i].href + '\')" >' + arr[i].innerHTML + '</option>';
+              fhtml = fhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, arr[i].attributes.href.value) + '\')" >' + arr[i].innerHTML + '</option>';
               }
               else{
-              fhtml = fhtml + '<option value="' + arr[i].href + '" >' + arr[i].innerHTML + '</option>';
+              fhtml = fhtml + '<option value="' + setUrl(host, hostp, arr[i].attributes.href.value) + '" >' + arr[i].innerHTML + '</option>';
               }
             }
           fhtml = fhtml + '</select>';
