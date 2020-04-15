@@ -28,7 +28,17 @@
   margin: 0px;
   }
 
-  
+  select{
+  border: 1px solid grey;
+  background-color: transparent;
+  color: #808080;
+  margin: 0px;
+  border-radius: 3px;
+  padding: 2px;
+  width: 100%;
+  height: 100%;
+  } 
+ 
 
   .container{
   width: 100%;
@@ -53,7 +63,6 @@
 
 
   .container > .playDiv > div {
-  border: 1px solid red;
   }
 
   .container > .playDiv > .playBrowse{
@@ -61,14 +70,19 @@
   flex-direction: column;
   align-items: stretch;
   align-self: stretch;
+
+  justify-content: space-between;
   
   flex-grow: 0;
   transition: all 1s;
-  padding: 8px;
+  padding: 0px 8px 0px 8px;
+  overflow-y: hidden;
+  max-height: 0%;
+  border: 0px solid #808080;
+  border-radius: 3px;
   }
 
   .container > .playDiv > .playBrowse:hover{
-  flex-grow: 1;
   }
 
 
@@ -93,9 +107,21 @@
   }
 
 
-  .container > .playDiv > .playBrowse:hover + video{
-  max-height: 0px;
-  flex-grow: 0;
+  .container > .playDiv > .playBrowse > .playBrowseWin{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  vertical-align: middle;
+  align-self: stretch;
+  flex-grow: 1;
+  margin-bottom: 10px;
+  opacity: 0;
+  border: 0px solid #808080;
+  border-radius: 3px;
+  transition: all 1s;
+  overflow-y: auto;
   }
 
 
@@ -173,21 +199,167 @@
   
   </style>
   <script>
-  function closeFileBrowse (){
-  alert("test");
-  }
+  var playlist = [];
+  var ply = ""; 
+
+    /*
+    ply.oncanplay = function () {
+    console.log(ply.currentSrc);
+    }
+    */
+
+    function displayList(pl){
+    var max=pl.length;
+    var html="";
+    var el = document.getElementById("list");
+      if(max>0){
+      el.innerHTML="";
+        for(var i=0; i<max; i++){
+          el.innerHTML=el.innerHTML + "<div><a onclick=\"delFromList(playlist, "+ i +")\">[-] </a>" + pl[i] + "</div>";
+        }
+      }
+      else{
+      el.innerHTML="";
+      }
+    }
+
+   function browseToUrl(str){
+   document.getElementById("browse").value=str;
+   loadUrl();
+   }
+
+   function addToList(pl, url){
+      
+      if(url != "" && url != null){
+        if(url.includes('\n')){
+        var arr=url.split('\n');
+        var max = arr.length;
+          for(var i=0; i < max; i++){
+          pl.push(arr[i]);
+          } 
+        }
+        else{
+        pl.push(url);
+        }
+
+        url="";
+        displayList(pl);
+        if(pl[0]!=document.getElementById("mPlayer").src){
+        document.getElementById("mPlayer").src=pl[0];
+        }
+      }
+    }
+
+    function browseAdd(pl, obj){
+    var max = obj.length;
+    var url = ''; 
+    var nl = '';
+      for(var i=0; i < max; i++){
+      url = url + nl + obj[i].value;
+      nl = '\n';
+      }
+    console.log(url);
+    addToList(pl, url); 
+    }
+
+    function delFromList(pl, id){
+    pl.splice(id, 1);
+    document.getElementById("mPlayer").src=pl[0];
+    displayList(pl);
+    }
+
+    function closeFileBrowse(){
+    var plyb=document.getElementById("playBrowse");
+    plyb.removeAttribute("style");
+
+    document.getElementById("mPlayer").removeAttribute("style");
+    document.getElementById("playBrowseWin").removeAttribute("style");
+    }
+
+    function loadUrl(){    
+    var plyb=document.getElementById("playBrowse");
+    plyb.style.flexGrow="1";
+    plyb.style.padding="8px";
+    plyb.style.maxHeight="100%";
+    plyb.style.border="1px solid #808080";
+
+    document.getElementById("mPlayer").style.maxHeight="0px";
+
+    document.getElementById("playBrowseWin").innerHTML="Fetching...";
+    document.getElementById("playBrowseWin").style.opacity="1";
+
+    var url = document.getElementById("browse").value;
+
+      if(url && url != ''){
+      fetch(url)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then((html) => {
+          var parser = new DOMParser();
+
+          var doc = parser.parseFromString(html, "text/html");
+
+          // You can now even select part of that html as you would in the regular DOM 
+          // Example:
+          // var docArticle = doc.querySelector('article').innerHTML;
+
+          var arr = doc.getElementsByTagName("a");
+          var max = arr.length;
+          var dhtml = "";
+          var fhtml = '<select id="fileSel" multiple>';
+            for(var i=0; i < max; i++){
+              if(arr[i].href.slice(-1) == '/'){
+              fhtml = fhtml + '<option value="' + arr[i].href + '" onclick="browseToUrl(\'' + arr[i].href + '\')" >' + arr[i].innerHTML + '</option>';
+              }
+              else{
+              fhtml = fhtml + '<option value="' + arr[i].href + '" >' + arr[i].innerHTML + '</option>';
+              }
+            }
+          fhtml = fhtml + '</select>';
+          document.getElementById("playBrowseWin").innerHTML=fhtml;
+        })
+        .catch((error) => {
+          console.error('There has been a problem with your fetch operation:', error);
+          document.getElementById("playBrowseWin").innerHTML='There has been a problem with your fetch operation:' + error;
+        });
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", function() {
+    var ply = document.getElementById("mPlayer");
+
+      ply.onended = function() {
+      playlist.shift();
+      displayList(playlist);
+      ply.src=playlist[0];
+      };
+
+      ply.onplay=function() {
+        ply.autoplay=true;
+        document.getElementById("info").innerHTML=ply.src;
+        console.log(ply.textTracks);
+      }
+
+      document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
+      document.getElementById("playBrowseBtn").onclick=function(){browseAdd(playlist, document.getElementById("fileSel").selectedOptions)};
+    }, false);
+
   </script>
 </head> 
 <body> 
 
   <div class="container">
     <div class="playDiv">
-      <div class="playBrowse">
-        <div id="browseWin" class="playBrowseWin">
+      <div id="playBrowse" class="playBrowse">
+        <div id="playBrowseWin" class="playBrowseWin">
         &nbsp;
         </div>
         <div class="playBrowseCtrl">
-        <input id="playBrowseBtn" type="submit" value="add"/>
+        <input id="playBrowseBtn" type="submit" value="add" />
         <div>&nbsp;</div>
         <input id="playBrowseBtnCls" type="submit" value="close" onclick="closeFileBrowse()" />
         </div>
@@ -203,9 +375,9 @@
 
     <div class="playListDiv">
       <div class="url">
-      <input id="browse" type="input" placeholder="url to browser"/>
+      <input id="browse" type="input" placeholder="url to browse" value="https://192.168.1.10/movies/"/>
       <div style="border: none;">&nbsp;</div>
-      <input id="browseBtn" type="submit" value="go" />
+      <input id="browseBtn" type="submit" value="go" onclick="loadUrl()"/>
       </div>
       <div id="list" class="playListList">
       &nbsp;
@@ -217,82 +389,6 @@
       </div>
     </div>
   </div>
-
-<script>
-var playlist = [];
-var ply = document.getElementById("mPlayer");
-
-ply.onended = function() {
-playlist.shift();
-displayList(playlist);
-ply.src=playlist[0];
-};
-
-ply.onplay=function() {
-  ply.autoplay=true;
-  document.getElementById("info").innerHTML=ply.src;
-  console.log(ply.textTracks);
-}
-
-/*
-ply.oncanplay = function () {
-console.log(ply.currentSrc);
-}
-*/
-
-function displayList(pl){
-var max=pl.length;
-var html="";
-var el = document.getElementById("list");
-  if(max>0){
-  el.innerHTML="";
-    for(var i=0; i<max; i++){
-      el.innerHTML=el.innerHTML + "<div><a onclick=\"delFromList(playlist, "+ i +")\">[-] </a>" + pl[i] + "</div>";
-    }
-  }
-  else{
-  el.innerHTML="";
-  }
-}
-
-
-function addToList(pl){
-var url = document.getElementById("addUrl");
-  
-  if(url.value != "" && url.value != null){
-    if(url.value.includes('\n')){
-    var arr=url.value.split('\n');
-    var max = arr.length;
-      for(var i=0;i<max; i++){
-      pl.push(arr[i]);
-      } 
-    }
-    else{
-    pl.push(url.value);
-    }
-
-    url.value="";
-    displayList(pl);
-    if(pl[0]!=document.getElementById("mPlayer").src){
-    document.getElementById("mPlayer").src=pl[0];
-    }
-  }
-}
-
-function delFromList(pl, id){
-pl.splice(id, 1);
-document.getElementById("mPlayer").src=pl[0];
-displayList(pl);
-}
-
-function closeFileBrowse(){
-document.getElementsById("browseWin").style.max-height="0px";
-}
-
-document.getElementById("addBtn").onclick=function(){addToList(playlist)};
-
-</script>
-
 </body> 
 </html>
 
