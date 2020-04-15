@@ -264,6 +264,8 @@
         displayList(pl);
         if(pl[0]!=document.getElementById("mPlayer").src){
         document.getElementById("mPlayer").src=pl[0];
+        document.getElementById("mPlayer").currentTime=0;
+        
         }
       }
     }
@@ -281,8 +283,14 @@
 
     function delFromList(pl, id){
     pl.splice(id, 1);
-      document.getElementById("mPlayer").src=pl[0];
-    
+      if(pl.length > 0){
+        if(document.getElementById("mPlayer").src != pl[0]){
+        document.getElementById("mPlayer").src=pl[0];
+        }
+      }
+      else{
+      document.getElementById("mPlayer").pause();
+      }
     displayList(pl);
     }
 
@@ -354,10 +362,18 @@
     var ply = document.getElementById("mPlayer");
 
       ply.onended = function() {
-      playlist.shift();
-      displayList(playlist);
-      ply.src=playlist[0];
-      document.getElementById("info").innerHTML=ply.src;
+        if(playlist.length > 1){
+        playlist.shift();
+        displayList(playlist);
+        ply.src=playlist[0];
+        document.getElementById("info").innerHTML=ply.src;
+        }
+        else{
+        playlist.shift();
+        displayList(playlist);
+        ply.autoplay=false;
+        document.getElementById("info").innerHTML='';
+        }
       };
 
       ply.onplay=function() {
