@@ -44,6 +44,7 @@
   width: 100%;
   display: flex;
   min-height: 80vh;
+  max-height: 100vh;
   }
   .container > div {
   border-spacing: 0px;
@@ -169,7 +170,7 @@
   .container > .playListDiv > #listExprt{
   display: none;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 0px;
   }  
@@ -367,6 +368,22 @@
       }
     }
 
+    function exportList( pl, id ){
+    var max = pl.length;
+    var rtrn='';
+    var nl='';
+      for( var i=0; i < max; i++){
+      rtrn = rtrn + nl + pl[i];
+      nl="\n";
+      }    
+    document.getElementById(id).value=rtrn;    
+    }
+
+    function clearList(pl){
+    pl.splice(0, pl.length);
+    displayList(pl);
+    }
+
     window.addEventListener("DOMContentLoaded", function() {
     var ply = document.getElementById("mPlayer");
 
@@ -394,6 +411,8 @@
 
       document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
       document.getElementById("playBrowseBtn").onclick=function(){browseAdd(playlist, document.getElementById("fileSel").selectedOptions)};
+      document.getElementById("listExprtBtn").onclick=function(){exportList(playlist, 'addUrl')};
+      document.getElementById("listClrBtn").onclick=function(){clearList(playlist)};
     }, false);
 
   </script>
@@ -431,6 +450,7 @@
       &nbsp;
       </div>
       <div id="listExprt">
+      <input id="listClrBtn" type="submit" value="clear" />
       <input id="listExprtBtn" type="submit" value="export" />
       </div>
       <div class="playListAdd">
