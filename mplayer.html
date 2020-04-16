@@ -299,6 +299,7 @@
       }
       else{
       document.getElementById("mPlayer").pause();
+      document.getElementById("mPlayer").autoplay=false;
       document.getElementById("listExprt").style.display='none';
       }
     displayList(pl);
@@ -379,8 +380,10 @@
     document.getElementById(id).value=rtrn;    
     }
 
-    function clearList(pl){
+    function clearList(pl, mp){
     pl.splice(0, pl.length);
+    mp.autoplay=false;
+    mp.pause();
     displayList(pl);
     }
 
@@ -412,7 +415,7 @@
       document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
       document.getElementById("playBrowseBtn").onclick=function(){browseAdd(playlist, document.getElementById("fileSel").selectedOptions)};
       document.getElementById("listExprtBtn").onclick=function(){exportList(playlist, 'addUrl')};
-      document.getElementById("listClrBtn").onclick=function(){clearList(playlist)};
+      document.getElementById("listClrBtn").onclick=function(){clearList(playlist, document.getElementById("mPlayer"))};
     }, false);
 
   </script>
