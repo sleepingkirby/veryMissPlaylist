@@ -172,7 +172,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 0px;
+  padding: 5px 0px 0px 0px;
   }  
  
   .container > .playListDiv > .playListList{
@@ -348,18 +348,33 @@
           // var docArticle = doc.querySelector('article').innerHTML;
 
           var arr = doc.getElementsByTagName("a");
-          var max = arr.length;
-          var dhtml = "";
-          var fhtml = '<select id="fileSel" multiple>';
+          var max = arr.length; 
+          var hash = {};
+          var sArr = [];
+          for(var i=0; i < max; i++){
+          //hash[arr[i].innerHTML] = setUrl(host, hostp, arr[i].attributes.href.value);
+          hash[arr[i].attributes.href.value] = arr[i].innerHTML;
+          sArr.push(arr[i].attributes.href.value);
+          }
+
+          sArr.sort();
+
+          var dhtml = '';
+          var fhtml = '';
             for(var i=0; i < max; i++){
-              if(arr[i].href.slice(-1) == '/'){
-              fhtml = fhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, arr[i].attributes.href.value) + '\')" >' + arr[i].innerHTML + '</option>';
+              if(sArr[i].slice(0,1) == '/'){
+              dhtml = dhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, sArr[i]) + '\')" >' + hash[sArr[i]] + '</option>';
               }
               else{
-              fhtml = fhtml + '<option value="' + setUrl(host, hostp, arr[i].attributes.href.value) + '" >' + arr[i].innerHTML + '</option>';
+                if(arr[i].href.slice(-1) == '/'){
+                fhtml = fhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, sArr[i]) + '\')" >' + hash[sArr[i]] + '</option>';
+                }
+                else{
+                fhtml = fhtml + '<option value="' + setUrl(host, hostp, sArr[i]) + '" >' + hash[sArr[i]] + '</option>';
+                }
               }
             }
-          fhtml = fhtml + '</select>';
+          fhtml = '<select id="fileSel" multiple>' + dhtml + fhtml + '</select>';
           document.getElementById("playBrowseWin").innerHTML=fhtml;
         })
         .catch((error) => {
@@ -386,6 +401,32 @@
     mp.pause();
     displayList(pl);
     }
+
+    function exportM3u( pl ){
+    var rtrn = '#EXTM3U';
+    var ne = '#EXTINF:0,';
+    var vlcOpt='#EXTVLCOPT:network-caching=1000';
+    
+    var max = pl.length;
+      for(var i=0; i < max; i++){
+      var tmp = pl[i].split('/').pop();
+      rtrn = rtrn + "\n" + ne + tmp + "\n" + vlcOpt + "\n" + pl[i];
+      }
+
+    //not my code. But very clean and understandable so I;m using it
+    //https://stackoverflow.com/questions/33664398/how-to-download-file-using-javascript-only
+    var a = document.createElement("a");
+    a.style = "display: none";
+    document.body.appendChild(a);
+
+    var blob = new File([rtrn], {type: 'text/plain'});
+    var url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = "veryMissPlaylist_export.m3u";
+    a.click();
+    window.URL.revokeObjectURL(url);
+    }
+  
 
     window.addEventListener("DOMContentLoaded", function() {
     var ply = document.getElementById("mPlayer");
@@ -415,6 +456,7 @@
       document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
       document.getElementById("playBrowseBtn").onclick=function(){browseAdd(playlist, document.getElementById("fileSel").selectedOptions)};
       document.getElementById("listExprtBtn").onclick=function(){exportList(playlist, 'addUrl')};
+      document.getElementById("listExprtM3uBtn").onclick=function(){exportM3u(playlist)};
       document.getElementById("listClrBtn").onclick=function(){clearList(playlist, document.getElementById("mPlayer"))};
     }, false);
 
@@ -454,7 +496,8 @@
       </div>
       <div id="listExprt">
       <input id="listClrBtn" type="submit" value="clear" />
-      <input id="listExprtBtn" type="submit" value="export" />
+      <input id="listExprtBtn" type="submit" value="export to text (below)" />
+      <input id="listExprtM3uBtn" type="submit" value="export .m3u" />
       </div>
       <div class="playListAdd">
       <textarea id="addUrl" placeholder="url"></textarea>
