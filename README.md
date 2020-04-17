@@ -1,7 +1,7 @@
 # veryMissPlaylist
 simple/slim HTML and javascript based playlist for media files.
 
-basically, if you have several urls that's an mp4 file, you can use to this queue up a list of them. And when you play, it'll play them in order, decrementing the list as it goes (because you've watched it.). Surprisingly, vlc doesn't do this... (or, if it does, I wasn't about to find out how to get it done easily).
+basically, if you have several urls that's an mp4 file, you can use to this queue up a list of them. And when you play, it'll play them in order, decrementing the list as it goes (because you've watched it.).
 
 Something I jammed out quickly. Just a javascript/HTML page that allows you to queue up a list of media files reachable and playable by the browser. Just open mplayer.html to use.
 
