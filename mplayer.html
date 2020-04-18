@@ -366,7 +366,7 @@
               dhtml = dhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, sArr[i]) + '\')" >' + hash[sArr[i]] + '</option>';
               }
               else{
-                if(arr[i].href.slice(-1) == '/'){
+                if(sArr[i].slice(-1) == '/'){
                 fhtml = fhtml + '<option onclick="browseToUrl(\'' + setUrl(host, hostp, sArr[i]) + '\')" >' + hash[sArr[i]] + '</option>';
                 }
                 else{
