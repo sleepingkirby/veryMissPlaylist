@@ -209,12 +209,22 @@
   <script>
   var playlist = [];
   var ply = ""; 
+  var dflt="//192.168.1.10/movies/";
+  var dfltPrtcl="http:";
 
     /*
     ply.oncanplay = function () {
     console.log(ply.currentSrc);
     }
     */
+
+    function setPrtcl(){
+    var prtcl=window.location.protocol;
+      if(window.location.protocol!="http:"&&window.location.protocol!="https:"){
+      prtcl=dfltPrtcl;
+      }
+    document.getElementById("browse").value=prtcl+dflt;
+    }
 
     function splitUrl( str ){
       if( str == '' || !str){
@@ -429,6 +439,8 @@
   
 
     window.addEventListener("DOMContentLoaded", function() {
+    setPrtcl();
+
     var ply = document.getElementById("mPlayer");
 
       ply.onended = function() {
