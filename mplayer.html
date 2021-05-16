@@ -472,6 +472,17 @@
       document.getElementById("listClrBtn").onclick=function(){clearList(playlist, document.getElementById("mPlayer"))};
     }, false);
 
+    window.addEventListener("keypress", function(e) {
+      switch(e.key){
+      case "n":
+      let vid=document.getElementById("mPlayer");
+      vid.currentTime=vid.duration;
+      break;
+      default:
+      break;
+      }
+    });
+
   </script>
 </head> 
 <body> 
