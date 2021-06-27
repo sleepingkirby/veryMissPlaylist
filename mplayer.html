@@ -537,14 +537,12 @@
     var _GET=getURLVar();
     
     var ply = document.getElementById("mPlayer");
-
       if(_GET.hasOwnProperty("v")){
       addToList(playlist, _GET.v);
         if(_GET.hasOwnProperty("t")&&!isNaN(parseFloat(_GET.t))){
         ply.currentTime=_GET.t;
         }
       } 
-
 
 
       ply.onended = function() {
