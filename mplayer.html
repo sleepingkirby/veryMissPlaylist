@@ -204,13 +204,76 @@
   resize: both;
   flex-grow: 1;
   }
-  
+ 
+  #msgDiv{
+  width: 100vw;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  max-height: 200px;
+  background-color: #FFD2D9;
+  border: 1px solid #FFA4B2;
+  color: #FF3B5A;
+  border-radius: 3px;
+  padding: 4px 6px 4px 6px;
+  opacity: 0;
+  z-index: -100;
+  }
+
+  #vidAct{
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  } 
+
+  @keyframes opac{
+  0%{opacity:0.8; max-height: 300px; margin-bottom: 4px; z-index: 100;}
+  99%{opacity:0; max-height: 300px; margin-bottom: 4px; z-index: 100;}
+  100%{opacity:0; max-height: 0px; margin-bottom: 0px; z-index: -100;}
+
   </style>
   <script>
   var playlist = [];
   var ply = ""; 
   var dflt="//192.168.1.10/movies/";
   var dfltPrtcl="http:";
+
+    function notifyMsg(msg){
+    var notif=document.getElementById('msgDiv');
+    notif.textContent=msg;
+    notif.style.cssText="animation:opac 5s";
+      notif.addEventListener("animationend", ()=>{
+      notif.removeAttribute("style");
+      });
+    }
+
+
+    //a hack function to copy to clipboard
+    function copyHack(str){
+    var ta=document.createElement("textarea");
+    ta.textContent=str;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy', false, null);
+    document.body.removeChild(ta);
+    }
+
+    
+    function getURLVar(){
+    var url=window.location.href;
+    var pos=url.indexOf("?");
+    var rtrn={};
+    var vNm="";
+      if(pos>=0){
+      vNm=url.substr(pos+1);
+      var tmpArr=vNm.split("&");
+        for(let i=0; i<tmpArr.length; i++){
+        var tmpObj=tmpArr[i].split("=");
+        rtrn[tmpObj[0]]=tmpObj.hasOwnProperty(1)?tmpObj[1]:null;
+        }
+      }
+    return rtrn;
+    }
 
     /*
     ply.oncanplay = function () {
@@ -440,8 +503,18 @@
 
     window.addEventListener("DOMContentLoaded", function() {
     setPrtcl();
-
+    var _GET=getURLVar();
+    
     var ply = document.getElementById("mPlayer");
+
+      if(_GET.hasOwnProperty("v")){
+      addToList(playlist, _GET.v);
+        if(_GET.hasOwnProperty("t")&&!isNaN(parseFloat(_GET.t))){
+        ply.currentTime=_GET.t;
+        }
+      } 
+
+
 
       ply.onended = function() {
         if(playlist.length > 1){
@@ -470,6 +543,14 @@
       document.getElementById("listExprtBtn").onclick=function(){exportList(playlist, 'addUrl')};
       document.getElementById("listExprtM3uBtn").onclick=function(){exportM3u(playlist)};
       document.getElementById("listClrBtn").onclick=function(){clearList(playlist, document.getElementById("mPlayer"))};
+        document.getElementById("getVidLink").onclick=function(){
+          if(mPlayer.src!=""){
+          var pos=window.location.href.indexOf("?");
+          var url=window.location.href.substr(0,60);
+          copyHack(url+"?v="+mPlayer.src+"&t="+mPlayer.currentTime);
+          notifyMsg("Link copied to clipboard: \n"+url+"?v="+mPlayer.src+"&t="+mPlayer.currentTime);
+          }
+        };
     }, false);
 
 
@@ -522,7 +603,7 @@
   </script>
 </head> 
 <body> 
-
+  <div id="msgDiv">&nbsp;</div>
   <div class="container">
     <div class="playDiv">
       <div id="playBrowse" class="playBrowse">
@@ -541,6 +622,9 @@
       </video>
 
       <div id="info"></div>
+        <div id="vidAct">
+        <input id="getVidLink" type="submit" value="Vid Link" />
+        </div>
     </div>
 
 
