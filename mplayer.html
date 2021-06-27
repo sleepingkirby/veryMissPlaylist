@@ -500,6 +500,37 @@
     window.URL.revokeObjectURL(url);
     }
   
+    /*---------------------------------------------------------
+    pre: curVidEl existing
+    post: addes keydown listener
+    adds bettervideo control so you can do things like advance by
+    a second or even 0.03 of a second.
+    ---------------------------------------------------------*/
+    function betterVidCntrl(el){
+      window.addEventListener("keydown", function(e){
+      var time=0;
+        if(e.key=="ArrowLeft"||e.key=="ArrowRight"){
+        time+=e.ctrlKey?1:0;
+        time+=e.altKey?0.03:0;
+        time+=e.shiftKey?20:0;
+        e.preventDefault();
+        time=time==0?5:time;//if there's no modified time, default to 5 seconds
+        //KEEP IN MIND, default time forward is 15 seconds.
+          switch(e.key){
+            case "ArrowLeft":
+              el.currentTime-=time;
+            break;
+            case "ArrowRight":
+              el.currentTime+=time;
+            break;
+            default:
+            break;
+          }
+        }
+      },true);
+    }
+
+
 
     window.addEventListener("DOMContentLoaded", function() {
     setPrtcl();
@@ -538,6 +569,22 @@
         //console.log(ply.textTracks);
       }
 
+
+
+      window.addEventListener("keypress", function(e) {
+        switch(e.key){
+        case "n":
+        ply.currentTime=ply.duration;
+        break;
+        default:
+        break;
+        }
+      });
+
+      //better video control event listener
+      betterVidCntrl(ply);
+
+
       document.getElementById("addBtn").onclick=function(){addToList(playlist, document.getElementById("addUrl").value)};
       document.getElementById("playBrowseBtn").onclick=function(){browseAdd(playlist, document.getElementById("fileSel").selectedOptions)};
       document.getElementById("listExprtBtn").onclick=function(){exportList(playlist, 'addUrl')};
@@ -552,53 +599,6 @@
           }
         };
     }, false);
-
-
-
-    window.addEventListener("keypress", function(e) {
-      switch(e.key){
-      case "n":
-      let vid=document.getElementById("mPlayer");
-      vid.currentTime=vid.duration;
-      break;
-      default:
-      break;
-      }
-    });
-
-    window.addEventListener("keydown", function(e){
-      switch(e.key){
-        case "ArrowLeft":
-          e.preventDefault();
-          var vid=document.getElementById("mPlayer");
-          if(e.ctrlKey&&!e.altKey){
-          vid.currentTime-=1;
-          }
-          else if(!e.ctrlKey&&e.altKey){
-          vid.currentTime-=0.03;
-          }
-          else{
-          vid.currentTime-=5;
-          }
-        break;
-        case "ArrowRight":
-          e.preventDefault();
-          var vid=document.getElementById("mPlayer");
-          if(e.ctrlKey&&!e.altKey){
-          vid.currentTime+=1;
-          }
-          else if(!e.ctrlKey&&e.altKey){
-          vid.currentTime+=0.03;
-          }
-          else{
-          vid.currentTime+=5;
-          }
-        break;
-        default:
-        break;
-      }
-
-    },true);
 
   </script>
 </head> 
